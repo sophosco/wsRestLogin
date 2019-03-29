@@ -63,17 +63,16 @@ pipeline {
         stage('Build docker image and push to registry') {
             steps {
                 script {
-                    echo "Connect to registry at ${REGISTRY_URL}"
-                    login_command = sh(returnStdout: true,
-                        script: "aws ecr get-login --region ${AWS_REGION} | sed -e 's|-e none||g'"
-                    )
-                    sh "${login_command}"
-                    echo "Build ${IMAGETAG}"
-                    sh "docker build ${IMAGETAG} ."
-                    echo "Register ${IMAGETAG} at ${REGISTRY_URL}"
-                    sh "docker -- push ${IMAGETAG}"
-                    echo "Disconnect from registry at ${REGISTRY_URL}"
-                    sh "docker logout ${REGISTRY_URL}"
+
+                    docker.withRegistry("${REGISTRY_URL}", "ecr:us-east-2:aws") {
+                        docker.image("your-image-name").push()
+
+                        //build image
+                        def ecrImage = docker.build("${IMAGETAG}")
+                        
+                        //push image
+                        ecrImage.push()
+                    }
                 }
             }
         }
