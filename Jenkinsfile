@@ -1,3 +1,7 @@
+#!groovy
+
+import groovy.json.JsonSlurper
+
 pipeline {
     agent {
         node {
