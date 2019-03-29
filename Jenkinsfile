@@ -62,17 +62,19 @@ pipeline {
         // stage 4: Build the docker image and push to ECR
         stage('Build docker image and push to registry') {
             steps {
-                echo "Connect to registry at ${REGISTRY_URL}"
-                login_command = sh(returnStdout: true,
-                    script: "aws ecr get-login --region ${AWS_REGION} | sed -e 's|-e none||g'"
-                )
-                sh "${login_command}"
-                echo "Build ${IMAGETAG}"
-                sh "docker build ${IMAGETAG}"
-                echo "Register ${IMAGETAG} at ${REGISTRY_URL}"
-                sh "docker -- push ${IMAGETAG}"
-                echo "Disconnect from registry at ${REGISTRY_URL}"
-                sh "docker logout ${REGISTRY_URL}"
+                script {
+                    echo "Connect to registry at ${REGISTRY_URL}"
+                    login_command = sh(returnStdout: true,
+                        script: "aws ecr get-login --region ${AWS_REGION} | sed -e 's|-e none||g'"
+                    )
+                    sh "${login_command}"
+                    echo "Build ${IMAGETAG}"
+                    sh "docker build ${IMAGETAG}"
+                    echo "Register ${IMAGETAG} at ${REGISTRY_URL}"
+                    sh "docker -- push ${IMAGETAG}"
+                    echo "Disconnect from registry at ${REGISTRY_URL}"
+                    sh "docker logout ${REGISTRY_URL}"
+                }
             }
         }
 
