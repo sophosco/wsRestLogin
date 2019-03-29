@@ -3,17 +3,19 @@ pipeline {
     agent {
         kubernetes {
             label 'jenkins-maven'
-            containerTemplate {
-                name 'maven'
-                image 'maven:alpine'
-                ttyEnabled true
-                command 'cat'
-            }
-            containerTemplate {
-                name 'docker'
-                image 'docker:dind'
-                ttyEnabled true
-                command 'cat'
+            podTemplate {
+                containerTemplate {
+                    name 'maven'
+                    image 'maven:alpine'
+                    ttyEnabled true
+                    command 'cat'
+                }
+                containerTemplate {
+                    name 'docker'
+                    image 'docker:dind'
+                    ttyEnabled true
+                    command 'cat'
+                }
             }
         }
     }
