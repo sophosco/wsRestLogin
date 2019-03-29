@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        node {
-            // spin up a maven slave pod to run this build on
-            label 'maven'
-        }
-    }
+    agent any
 
     environment {
         PROJECT      = 'sophosstore'
