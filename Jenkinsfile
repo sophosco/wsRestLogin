@@ -10,7 +10,7 @@ pipeline {
         PROJECT      = 'sophosstore'
         SERVICENAME  = 'wsrestpedido'
         AWS_REGION   = 'us-east-2'
-        REGISTRY_URL = "https://887482798966.dkr.ecr.${AWS_REGION}.amazonaws.com/poc-sophos"
+        REGISTRY_URL = "https://887482798966.dkr.ecr.${AWS_REGION}.amazonaws.com"
         IMAGEVERSION = 'beta'
         NAMESPACE    = 'dev'
         IMAGETAG     = "${PROJECT}/${SERVICENAME}:${IMAGEVERSION}${env.BUILD_NUMBER}"
@@ -55,7 +55,7 @@ pipeline {
         stage('Push image to registry') {
             steps {
                 echo "Connect to registry at ${REGISTRY_URL}"
-                login_command = sh(returnStdout: true,
+                def login_command = sh(returnStdout: true,
                     script: "aws ecr get-login --region ${AWS_REGION} | sed -e 's|-e none||g'"
                 )
                 sh "${login_command}"
