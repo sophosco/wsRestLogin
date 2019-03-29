@@ -59,31 +59,24 @@ pipeline {
             }
         }
 
-        // stage 4: Build the docker image
-        stage('Build docker image') {
+        // stage 4: Build the docker image and push to ECR
+        stage('Build docker image and push to registry') {
             steps {
+                echo "Connect to registry at ${REGISTRY_URL}"
+                login_command = sh(returnStdout: true,
+                    script: "aws ecr get-login --region ${AWS_REGION} | sed -e 's|-e none||g'"
+                )
+                sh "${login_command}"
+                echo "Build ${IMAGETAG}"
                 sh "docker build ${IMAGETAG}"
+                echo "Register ${IMAGETAG} at ${REGISTRY_URL}"
+                sh "docker -- push ${IMAGETAG}"
+                echo "Disconnect from registry at ${REGISTRY_URL}"
+                sh "docker logout ${REGISTRY_URL}"
             }
         }
 
-        // stage 5: Push image to docker registry
-        stage('Push image to registry') {
-            steps {
-                script {
-                    echo "Connect to registry at ${REGISTRY_URL}"
-                    login_command = sh(returnStdout: true,
-                        script: "aws ecr get-login --region ${AWS_REGION} | sed -e 's|-e none||g'"
-                    )
-                    sh "${login_command}"
-                    echo "Register ${IMAGETAG} at ${REGISTRY_URL}"
-                    sh "docker -- push ${IMAGETAG}"
-                    echo "Disconnect from registry at ${REGISTRY_URL}"
-                    sh "docker logout ${REGISTRY_URL}"
-                }
-            }
-        }
-
-        // stage 6: Deploy application
+        // stage 5: Deploy application
         stage('Deploy application') {
             steps {
                 sh "kubectl get ns ${NAMESPACE} || kubectl create ns ${NAMESPACE}"
