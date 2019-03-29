@@ -3,6 +3,7 @@ pipeline {
         kubernetes {
             //cloud 'kubernetes'
             label 'maven'
+            defaultContainer 'jnlp'
             yaml """
                 apiVersion: v1
                 kind: Pod
