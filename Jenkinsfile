@@ -20,7 +20,7 @@ pipeline {
                 }
             ]
         }
-  }
+    }
 
     environment {
         PROJECT      = 'sophosstore'
