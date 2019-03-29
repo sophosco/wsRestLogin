@@ -3,22 +3,20 @@ pipeline {
         kubernetes {
             //cloud 'kubernetes'
             label 'maven'
-            containers: [
-                containerTemplate {
-                    name 'maven'
-                    image 'maven:3.3.9-jdk-8-alpine'
-                    ttyEnabled true
-                    command 'cat'
-                },
-                containerTemplate {
-                    name 'docker'
-                    image: 'docker:dind'
-                    ttyEnabled true
-                    alwaysPullImage true
-                    command 'dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay'
-                    privileged true
-                }
-            ]
+            containerTemplate {
+                name 'maven'
+                image 'maven:3.3.9-jdk-8-alpine'
+                ttyEnabled true
+                command 'cat'
+            },
+            containerTemplate {
+                name 'docker'
+                image: 'docker:dind'
+                ttyEnabled true
+                alwaysPullImage true
+                command 'dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay'
+                privileged true
+            }
         }
     }
 
