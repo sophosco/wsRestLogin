@@ -69,7 +69,7 @@ pipeline {
                     )
                     sh "${login_command}"
                     echo "Build ${IMAGETAG}"
-                    sh "docker build ${IMAGETAG}"
+                    sh "docker build ${IMAGETAG} ."
                     echo "Register ${IMAGETAG} at ${REGISTRY_URL}"
                     sh "docker -- push ${IMAGETAG}"
                     echo "Disconnect from registry at ${REGISTRY_URL}"
