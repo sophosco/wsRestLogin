@@ -9,6 +9,12 @@ pipeline {
                 ttyEnabled true
                 command 'cat'
             }
+            containerTemplate {
+                name 'docker'
+                image 'docker:dind'
+                ttyEnabled true
+                command 'cat'
+            }
         }
     }
         environment {
