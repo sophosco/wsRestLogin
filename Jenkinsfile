@@ -1,7 +1,3 @@
-#!groovy
-
-import groovy.json.JsonSlurper
-
 pipeline {
     agent {
         node {
@@ -15,30 +11,18 @@ pipeline {
         SERVICENAME  = 'wsrestpedido'
         AWS_REGION   = 'us-east-2'
         REGISTRY_URL = "https://887482798966.dkr.ecr.${AWS_REGION}.amazonaws.com/poc-sophos"
-        switch(env.BRANCH_NAME.toLowerCase()) {
-            case "master":
-                IMAGEVERSION = 'latest'
-                NAMESPACE    = 'prd'
-                IMAGETAG     = "${PROJECT}/${SERVICENAME}:${IMAGEVERSION}"
-                break
-            case "release":
-                IMAGEVERSION = 'rc'
-                NAMESPACE    = 'stg'
-                IMAGETAG     = "${PROJECT}/${SERVICENAME}:${IMAGEVERSION}${env.BUILD_NUMBER}"
-                break
-            default:
-                IMAGEVERSION = 'beta'
-                NAMESPACE    = 'dev'
-                IMAGETAG     = "${PROJECT}/${SERVICENAME}:${IMAGEVERSION}${env.BUILD_NUMBER}"
-                break
-        }
+        IMAGEVERSION = 'beta'
+        NAMESPACE    = 'dev'
+        IMAGETAG     = "${PROJECT}/${SERVICENAME}:${IMAGEVERSION}${env.BUILD_NUMBER}"
     }
 
     stages {
 
         // stage 1: Checkout code from git
         stage('Checkout') {
-            checkout scm
+            step {
+                checkout scm
+            }
         }
 
         // stage 2: Build application
@@ -85,39 +69,11 @@ pipeline {
         // stage 6: Deploy application
         stage('Deploy application') {
             steps {
-                switch(${NAMESPACE}) {
-                    // rollout to staging environment
-                    case "stg":
-                        // create namespace if it doesn't exist
-                        sh "kubectl get ns ${NAMESPACE} || kubectl create ns ${NAMESPACE}"
-                        // update the IMAGETAG to the latest version
-                        sh "sed -i.bak 's#${PROJECT}/${SERVICENAME}:${IMAGEVERSION}#${IMAGETAG}#' ./k8s/stg/*.yaml"
-                        // create or update resources
-                        sh "kubectl --namespace=${NAMESPACE} apply -f k8s/stg/deployment.yaml"
-                        sh "kubectl --namespace=${NAMESPACE} apply -f k8s/stg/service.yaml"
-                        // grab the external Ip address of the service
-                        sh "echo http://`kubectl --namespace=${NAMESPACE} get service/${SERVICENAME} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${SERVICENAME}"
-                        break
-                    // rollout to production environment
-                    case "prd":
-                        // create namespace if it doesn't exist
-                        sh "kubectl get ns ${NAMESPACE} || kubectl create ns ${NAMESPACE}"
-                        // update the IMAGETAG to the latest version
-                        sh "sed -i.bak 's#${PROJECT}/${SERVICENAME}:${IMAGEVERSION}#${IMAGETAG}#' ./k8s/prd/*.yaml"
-                        // create or update resources
-                        sh "kubectl --namespace=${NAMESPACE} apply -f k8s/prd/deployment.yaml"
-                        sh "kubectl --namespace=${NAMESPACE} apply -f k8s/prd/service.yaml"
-                        // grab the external Ip address of the service
-                        sh "echo http://`kubectl --namespace=${NAMESPACE} get service/${SERVICENAME} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${SERVICENAME}"
-                        break
-                    default:
-                        sh "kubectl get ns ${NAMESPACE} || kubectl create ns ${NAMESPACE}"
-                        sh "sed -i.bak 's#${PROJECT}/${SERVICENAME}:${IMAGEVERSION}#${IMAGETAG}#' ./k8s/dev/*.yaml"
-                        sh "kubectl --namespace=${NAMESPACE} apply -f k8s/dev/deployment.yaml"
-                        sh "kubectl --namespace=${NAMESPACE} apply -f k8s/dev/service.yaml"
-                        sh "echo http://`kubectl --namespace=${NAMESPACE} get service/${SERVICENAME} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${SERVICENAME}"
-                        break
-                }
+                sh "kubectl get ns ${NAMESPACE} || kubectl create ns ${NAMESPACE}"
+                sh "sed -i.bak 's#${PROJECT}/${SERVICENAME}:${IMAGEVERSION}#${IMAGETAG}#' ./k8s/dev/*.yaml"
+                sh "kubectl --namespace=${NAMESPACE} apply -f k8s/dev/deployment.yaml"
+                sh "kubectl --namespace=${NAMESPACE} apply -f k8s/dev/service.yaml"
+                sh "echo http://`kubectl --namespace=${NAMESPACE} get service/${SERVICENAME} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${SERVICENAME}"
             }
         }
 
