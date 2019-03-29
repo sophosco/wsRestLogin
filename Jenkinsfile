@@ -20,7 +20,7 @@ pipeline {
 
         // stage 1: Checkout code from git
         stage('Checkout') {
-            step {
+            steps {
                 checkout scm
             }
         }
