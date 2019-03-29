@@ -5,22 +5,24 @@ pipeline {
             label 'maven'
             defaultContainer 'jnlp'
             yaml """
-                apiVersion: v1
-                kind: Pod
-                spec:
-                    containers:
-                        - name: maven
-                          image: maven:alpine
-                          command:
-                          - cat
-                          tty: true
-                        - name: docker
-                          image: docker:dind
-                          command:
-                          - dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay
-                          tty: true
-                          priveleged: true
-            """
+apiVersion: v1
+kind: Pod
+metadata:
+    labels: 
+        some-label: some-label-value
+spec:
+    containers:
+    - name: maven
+      image: maven:alpine
+      command:
+      - cat
+      tty: true
+    - name: docker
+      image: docker:dind
+      command:
+      - dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay
+      tty: true
+"""
         }
     }
 
