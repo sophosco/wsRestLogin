@@ -3,12 +3,22 @@ pipeline {
         kubernetes {
             //cloud 'kubernetes'
             label 'maven'
-            containerTemplate {
-                name 'maven'
-                image 'maven:3.3.9-jdk-8-alpine'
-                ttyEnabled true
-                command 'cat'
-            }
+            containers: [
+                containerTemplate {
+                    name 'maven'
+                    image 'maven:3.3.9-jdk-8-alpine'
+                    ttyEnabled true
+                    command 'cat'
+                },
+                containerTemplate {
+                    name 'docker'
+                    image: 'docker:dind'
+                    ttyEnabled true
+                    alwaysPullImage true
+                    command 'dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay'
+                    privileged true
+                }
+            ]
         }
   }
 
@@ -23,15 +33,6 @@ pipeline {
     }
 
     stages {
-
-        stage('Initialize'){
-            steps {
-                script {
-                    def dockerHome = tool 'docker'
-                    env.PATH = "${dockerHome}/bin:${env.PATH}"
-                }
-            }
-        }
 
         // stage 1: Checkout code from git
         stage('Checkout') {
@@ -62,29 +63,31 @@ pipeline {
         // stage 4: Build the docker image and push to ECR
         stage('Build docker image and push to registry') {
             steps {
-                script {
-                    /*
-                    docker.withRegistry("${REGISTRY_URL}", "ecr:us-east-2:aws") {
-                        docker.image("your-image-name").push()
+                container('docker') {
+                    script {
+                        /*
+                        docker.withRegistry("${REGISTRY_URL}", "ecr:us-east-2:aws") {
+                            docker.image("your-image-name").push()
 
-                        //build image
-                        def ecrImage = docker.build("${IMAGETAG}")
-                        
-                        //push image
-                        ecrImage.push()
-                    }*/
+                            //build image
+                            def ecrImage = docker.build("${IMAGETAG}")
+                            
+                            //push image
+                            ecrImage.push()
+                        }*/
 
-                    echo "Connect to registry at ${REGISTRY_URL}"
-                    login_command = sh(returnStdout: true,
-                        script: "aws ecr get-login --region ${AWS_REGION} | sed -e 's|-e none||g'"
-                    )
-                    sh "${login_command}"
-                    echo "Build ${IMAGETAG}"
-                    sh "docker build -t ${IMAGETAG} ."
-                    echo "Register ${IMAGETAG} at ${REGISTRY_URL}"
-                    sh "docker -- push ${IMAGETAG}"
-                    echo "Disconnect from registry at ${REGISTRY_URL}"
-                    sh "docker logout ${REGISTRY_URL}"
+                        echo "Connect to registry at ${REGISTRY_URL}"
+                        login_command = sh(returnStdout: true,
+                            script: "aws ecr get-login --region ${AWS_REGION} | sed -e 's|-e none||g'"
+                        )
+                        sh "${login_command}"
+                        echo "Build ${IMAGETAG}"
+                        sh "docker build -t ${IMAGETAG} ."
+                        echo "Register ${IMAGETAG} at ${REGISTRY_URL}"
+                        sh "docker -- push ${IMAGETAG}"
+                        echo "Disconnect from registry at ${REGISTRY_URL}"
+                        sh "docker logout ${REGISTRY_URL}"
+                    }
                 }
             }
         }
