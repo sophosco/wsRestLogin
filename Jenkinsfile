@@ -3,19 +3,11 @@ pipeline {
     agent {
         kubernetes {
             label 'jenkins-maven'
-            containerTemplates {
-                containerTemplate {
-                    name 'maven'
-                    image 'maven:alpine'
-                    ttyEnabled true
-                    command 'cat'
-                }
-                containerTemplate {
-                    name 'docker'
-                    image 'docker:dind'
-                    ttyEnabled true
-                    command 'cat'
-                }
+            containerTemplate {
+                name 'maven-docker'
+                image 'twalter/maven-docker'
+                ttyEnabled true
+                command 'cat'
             }
         }
     }
@@ -60,9 +52,8 @@ pipeline {
             // stage 4: Build the docker image and push to ECR
             stage('Build docker image and push to registry') {
                 steps {
-                    container('docker') {
                         script {
-                            /*
+                            
                             docker.withRegistry("${REGISTRY_URL}", "ecr:us-east-2:aws") {
                                 docker.image("your-image-name").push()
 
@@ -71,9 +62,9 @@ pipeline {
                                 
                                 //push image
                                 ecrImage.push()
-                            }*/
+                            }
 
-                            echo "Connect to registry at ${REGISTRY_URL}"
+                            /* echo "Connect to registry at ${REGISTRY_URL}"
                             login_command = sh(returnStdout: true,
                                 script: "aws ecr get-login --region ${AWS_REGION} | sed -e 's|-e none||g'"
                             )
@@ -83,10 +74,10 @@ pipeline {
                             echo "Register ${IMAGETAG} at ${REGISTRY_URL}"
                             sh "docker -- push ${IMAGETAG}"
                             echo "Disconnect from registry at ${REGISTRY_URL}"
-                            sh "docker logout ${REGISTRY_URL}"
+                            sh "docker logout ${REGISTRY_URL}" */
                         }
                     }
-                }
+                
             }
 
             // stage 5: Deploy application
