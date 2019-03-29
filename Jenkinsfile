@@ -11,7 +11,7 @@ podTemplate(label: 'maven-builder',
         containerTemplate(
             name: 'docker',
             image: 'docker:dind',
-            command: 'dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay'
+            command: 'dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay',
             ttyEnabled: true
         )
     ],
