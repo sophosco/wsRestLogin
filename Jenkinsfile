@@ -3,7 +3,7 @@ pipeline {
     agent {
         kubernetes {
             label 'jenkins-maven'
-            podTemplate {
+            containerTemplates {
                 containerTemplate {
                     name 'maven'
                     image 'maven:alpine'
