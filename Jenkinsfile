@@ -1,28 +1,16 @@
-#!/usr/bin/groovy
 
-podTemplate(label: 'maven-builder',
-    containers: [
-        containerTemplate(
-            name: 'maven',
-            image: 'maven:alpine',
-            command: 'cat',
-            ttyEnabled: true
-        ),
-        containerTemplate(
-            name: 'docker',
-            image: 'docker:dind',
-            command: 'dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay',
-            ttyEnabled: true
-        )
-    ],
-    volumes: [ 
-        hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'), 
-    ]
-)
-
-{
-
-    node('maven-builder') {
+pipeline {
+    agent {
+        kubernetes {
+            label 'jenkins-maven'
+            containerTemplate {
+                name 'maven'
+                image 'maven:alpine'
+                ttyEnabled true
+                command 'cat'
+            }
+        }
+    }
         environment {
             PROJECT      = 'sophosstore'
             SERVICENAME  = 'wsrestpedido'
@@ -106,6 +94,5 @@ podTemplate(label: 'maven-builder',
 
         }
     
-    }
 
 }
