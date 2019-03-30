@@ -25,10 +25,10 @@ pipeline {
         stages {
             stage('Initialize'){
                 steps {
-                    script {
-                        def dockerHome = tool 'docker'
-                        env.PATH = "${dockerHome}/bin:${env.PATH}"
-                    }
+                    //script {
+                    //    def dockerHome = tool 'docker'
+                    //    env.PATH = "${dockerHome}/bin:${env.PATH}"
+                    //}
                 }
             }
 
@@ -69,11 +69,11 @@ pipeline {
                                 
                                 //push image
                                 //dockerImage.push()
-                                echo "Connect to registry at ${REGISTRY_URL}"
-                                login_command = sh(returnStdout: true,
-                                  script: "aws ecr get-login --region ${AWS_REGION} | sed -e 's|-e none||g'"
-                                )
-                                sh "${login_command}"
+                                //echo "Connect to registry at ${REGISTRY_URL}"
+                                //login_command = sh(returnStdout: true,
+                                //  script: "aws ecr get-login --region ${AWS_REGION} | sed -e 's|-e none||g'"
+                                //)
+                                //sh "${login_command}"
                                 echo "Build ${IMAGETAG}"
                                 sh "docker build -t ${IMAGETAG} ."
                                 echo "Register ${IMAGETAG} at ${REGISTRY_URL}"
