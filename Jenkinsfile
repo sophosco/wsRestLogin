@@ -23,9 +23,15 @@ podTemplate(label: 'slave',
     ]
 ) {
     node('slave') {
-        stage('Run a docker thing') {
+        stage('Run pipeline') {
             stage 'Checkout'
             checkout scm
+            
+            container('maven') {
+                stage 'Build'
+                sh 'mvn package'
+            }
+
             container('docker') {
                 stage 'Docker thing1'
                 // sh 'docker info'
