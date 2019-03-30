@@ -16,7 +16,7 @@ pipeline {
             PROJECT      = 'sophosstore'
             SERVICENAME  = 'wsrestpedido'
             AWS_REGION   = 'us-east-2'
-            REGISTRY_URL = "https://887482798966.dkr.ecr.${AWS_REGION}.amazonaws.com"
+            REGISTRY_URL = "https://887482798966.dkr.ecr.us-east-2.amazonaws.com/poc-sophos"
             IMAGEVERSION = 'beta'
             NAMESPACE    = 'dev'
             IMAGETAG     = "${PROJECT}/${SERVICENAME}:${IMAGEVERSION}${env.BUILD_NUMBER}"
