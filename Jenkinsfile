@@ -23,31 +23,23 @@ podTemplate(label: 'slave',
     ]
 ) {
     node('slave') {
-        stage 'Checkout'
-        ckeckout scm
-
-        container('maven') {
-            stage 'Build'
-            sh 'mvn package'
-
-            stage 'Test'
-            sh 'mvn test'
-        }
-
-        container('docker') {
-            stage 'Create image'
-            // sh 'docker info'
-            // sh 'docker build -t rmwpl/test:latest .'
-            // sh 'docker images'
-            app = docker.build("rmwpl/test:latest")
-            stage 'docker exec'
-            app.inside {
-                sh 'ls -alh'
+        stage('Run a docker thing') {
+            stage 'Checkout'
+            checkout scm
+            container('docker') {
+                stage 'Docker thing1'
+                // sh 'docker info'
+                // sh 'docker build -t rmwpl/test:latest .'
+                // sh 'docker images'
+                app = docker.build("rmwpl/test:latest")
+                stage 'docker exec'
+                app.inside {
+                    sh 'ls -alh'
+               }
             }
         }
-    }
-
-}
+    }//node
+}//podTemplate
 
 
 // pipeline {
