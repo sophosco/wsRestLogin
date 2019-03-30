@@ -23,15 +23,13 @@ podTemplate(label: 'slave',
     ]
 ) {
     node('slave') {
-        environment {
-            PROJECT      = 'sophosstore'
-            SERVICENAME  = 'wsrestpedido'
-            AWS_REGION   = 'us-east-2'
-            REGISTRY_URL = "https://887482798966.dkr.ecr.us-east-2.amazonaws.com/poc-sophos"
-            IMAGEVERSION = 'beta'
-            NAMESPACE    = 'dev'
-            IMAGETAG     = "${PROJECT}/${SERVICENAME}:${IMAGEVERSION}${env.BUILD_NUMBER}"
-        }
+        def PROJECT      = 'sophosstore'
+        def SERVICENAME  = 'wsrestpedido'
+        def AWS_REGION   = 'us-east-2'
+        def REGISTRY_URL = "https://887482798966.dkr.ecr.us-east-2.amazonaws.com/poc-sophos"
+        def IMAGEVERSION = 'beta'
+        def NAMESPACE    = 'dev'
+        def IMAGETAG     = "$PROJECT/$SERVICENAME:$IMAGEVERSION${env.BUILD_NUMBER}"
 
         stage('Checkout') {
             checkout scm
@@ -53,8 +51,8 @@ podTemplate(label: 'slave',
 
         container('docker') {
             stage('Create image') {
-                docker.withRegistry("${env.REGISTRY_URL}", "ecr:us-east-2:aws") {
-                    image = docker.build("${env.IMAGETAG}")
+                docker.withRegistry("$REGISTRY_URL", "ecr:us-east-2:aws") {
+                    image = docker.build("$IMAGETAG")
                     image.inside {
                         sh 'ls -alh'
                     }
