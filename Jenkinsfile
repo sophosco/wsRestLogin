@@ -28,7 +28,6 @@ pipeline {
                     script {
                         def dockerHome = tool 'docker'
                         env.PATH = "${dockerHome}/bin:${env.PATH}"
-                        sh "service docker restart"
                     }
                 }
             }
@@ -63,15 +62,24 @@ pipeline {
             stage('Build docker image and push to registry') {
                 steps {
                         script {
-                            
+                            echo "Build with server ${env.DOCKER_HOST}"
                             docker.withRegistry("${REGISTRY_URL}", "ecr:us-east-2:aws") {
-                                docker.image("your-image-name").push()
-
                                 //build image
-                                def ecrImage = docker.build("${IMAGETAG}")
+                                //def dockerImage = docker.build("${IMAGETAG}")
                                 
                                 //push image
-                                ecrImage.push()
+                                //dockerImage.push()
+                                echo "Connect to registry at ${REGISTRY_URL}"
+                                login_command = sh(returnStdout: true,
+                                  script: "aws ecr get-login --region ${AWS_REGION} | sed -e 's|-e none||g'"
+                                )
+                                sh "${login_command}"
+                                echo "Build ${IMAGETAG}"
+                                sh "docker build -t ${IMAGETAG} ."
+                                echo "Register ${IMAGETAG} at ${REGISTRY_URL}"
+                                sh "docker push ${IMAGETAG}"
+                                echo "Disconnect from registry at ${REGISTRY_URL}"
+                                sh "docker logout ${REGISTRY_URL}"
                             }
 
                             /* echo "Connect to registry at ${REGISTRY_URL}"
