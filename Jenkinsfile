@@ -7,6 +7,12 @@ podTemplate(label: 'slave',
             alwaysPullImage: true, 
             privileged: true,
             command: 'dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay'
+        ),
+        containerTemplate(
+            name: 'maven',
+            image: 'maven:alpine',
+            ttyEnabled: true,
+            command: 'cat'
         )
     ],
    volumes: [
