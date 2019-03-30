@@ -23,11 +23,11 @@ podTemplate(label: 'slave',
     ]
 ) {
     node('slave') {
-        stage('Checkout') {
+        stage('Checkout code') {
             checkout scm
         }
         
-        stage('Build and test application') {
+        //stage('Build and test application') {
             container('maven') {
                 stage('Build') {
                     sh 'mvn package'
@@ -36,7 +36,7 @@ podTemplate(label: 'slave',
                     sh 'mvn test'
                 }
             }
-        }
+        //}
 
         stage('Create docker image') {
             
