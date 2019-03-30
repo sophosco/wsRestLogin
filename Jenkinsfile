@@ -23,35 +23,46 @@ podTemplate(label: 'slave',
     ]
 ) {
     node('slave') {
-        stage('Checkout code') {
+        environment {
+            PROJECT      = 'sophosstore'
+            SERVICENAME  = 'wsrestpedido'
+            AWS_REGION   = 'us-east-2'
+            REGISTRY_URL = "https://887482798966.dkr.ecr.us-east-2.amazonaws.com/poc-sophos"
+            IMAGEVERSION = 'beta'
+            NAMESPACE    = 'dev'
+            IMAGETAG     = "${PROJECT}/${SERVICENAME}:${IMAGEVERSION}${env.BUILD_NUMBER}"
+        }
+
+        stage('Checkout') {
             checkout scm
         }
         
-        //stage('Build and test application') {
-            container('maven') {
-                stage('Build') {
-                    sh 'mvn package'
-                }
-                stage('Test') {
-                    sh 'mvn test'
+        container('maven') {
+            stage('Build') {
+                sh 'mvn package'
+            }
+            stage('Test') {
+                sh 'mvn test'
+                post {
+                    always {
+                        junit '**/target/*-reports/TEST-*.xml'
+                    }
                 }
             }
-        //}
+        }//maven
 
-        stage('Create docker image') {
-            
-            container('docker') {
-                stage 'Docker thing1'
-                // sh 'docker info'
-                // sh 'docker build -t rmwpl/test:latest .'
-                // sh 'docker images'
-                app = docker.build("rmwpl/test:latest")
-                stage 'docker exec'
-                app.inside {
-                    sh 'ls -alh'
-               }
+        container('docker') {
+            stage('Create image') {
+                docker.withRegistry("${REGISTRY_URL}", "ecr:us-east-2:aws") {
+                    image = docker.build("${IMAGETAG}")
+                    image.inside {
+                        sh 'ls -alh'
+                    }
+                    image.push()
+                }
             }
-        }
+        }//docker
+
     }//node
 }//podTemplate
 
