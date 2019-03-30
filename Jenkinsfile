@@ -4,8 +4,8 @@ pipeline {
         kubernetes {
             label 'jenkins-maven'
             containerTemplate {
-                name 'maven-docker'
-                image 'twalter/maven-docker'
+                name 'maven'
+                image 'maven:alpine'
                 ttyEnabled true
                 command 'cat'
             }
@@ -22,6 +22,14 @@ pipeline {
         }
 
         stages {
+            stage('Initialize'){
+                steps {
+                    script {
+                        def dockerHome = tool 'docker'
+                        env.PATH = "${dockerHome}/bin:${env.PATH}"
+                    }
+                }
+            }
 
             // stage 1: Checkout code from git
             stage('Checkout') {
