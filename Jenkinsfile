@@ -28,8 +28,7 @@ pipeline {
                     script {
                         def dockerHome = tool 'docker'
                         env.PATH = "${dockerHome}/bin:${env.PATH}"
-                        sh "sudo groupadd docker"
-                        sh "sudo service docker restart"
+                        sh "service docker restart"
                     }
                 }
             }
