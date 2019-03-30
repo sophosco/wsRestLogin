@@ -43,10 +43,7 @@ podTemplate(label: 'slave',
             }
             stage('Test') {
                 sh 'mvn test'
-                post {
-                    always {
-                        junit '**/target/*-reports/TEST-*.xml'
-                    }
+                junit '**/target/*-reports/TEST-*.xml'
                 }
             }
         }//maven
