@@ -8,6 +8,7 @@ pipeline {
                 image 'maven:alpine'
                 ttyEnabled true
                 command 'cat'
+                privileged true
             }
         }
     }
