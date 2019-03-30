@@ -26,7 +26,7 @@ podTemplate(label: 'slave',
         def PROJECT      = 'sophosstore'
         def SERVICENAME  = 'wsrestpedido'
         def AWS_REGION   = 'us-east-2'
-        def REGISTRY_URL = "https://887482798966.dkr.ecr.us-east-2.amazonaws.com/poc-sophos"
+        def REGISTRY_URL = "https://887482798966.dkr.ecr.us-east-2.amazonaws.com"
         def IMAGEVERSION = 'beta'
         def NAMESPACE    = 'dev'
         def IMAGETAG     = "$PROJECT/$SERVICENAME:$IMAGEVERSION${env.BUILD_NUMBER}"
