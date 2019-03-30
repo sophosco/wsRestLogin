@@ -42,15 +42,19 @@ podTemplate(label: 'slave',
                 sh 'mvn package'
             }
             stage('Test') {
-                sh 'mvn test'
-                junit '**/target/*-reports/TEST-*.xml'
+                try {
+                    sh 'mvn test'
+                } 
+                finally {
+                    junit '**/target/*-reports/TEST-*.xml'
+                }
             }
         }//maven
 
         container('docker') {
             stage('Create image') {
-                docker.withRegistry("${REGISTRY_URL}", "ecr:us-east-2:aws") {
-                    image = docker.build("${IMAGETAG}")
+                docker.withRegistry("${env.REGISTRY_URL}", "ecr:us-east-2:aws") {
+                    image = docker.build("${env.IMAGETAG}")
                     image.inside {
                         sh 'ls -alh'
                     }
