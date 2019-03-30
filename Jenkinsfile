@@ -44,7 +44,6 @@ podTemplate(label: 'slave',
             stage('Test') {
                 sh 'mvn test'
                 junit '**/target/*-reports/TEST-*.xml'
-                }
             }
         }//maven
 
