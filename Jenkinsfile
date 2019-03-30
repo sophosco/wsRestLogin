@@ -24,7 +24,7 @@ podTemplate(label: 'slave',
 ) {
     node('slave') {
         def PROJECT      = 'sophosstore'
-        def SERVICENAME  = 'wsrestpedido'
+        def SERVICENAME  = 'wsrestlogin'
         def AWS_REGION   = 'us-east-2'
         def REGISTRY_URL = "https://887482798966.dkr.ecr.us-east-2.amazonaws.com"
         def IMAGEVERSION = 'beta'
