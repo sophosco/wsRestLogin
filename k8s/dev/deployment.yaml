@@ -13,14 +13,14 @@ spec:
         apps: wsrestlogin
     spec:
       containers:
-      - name: wsrestlogin
-        image: sophosstore/wsrestlogin:beta
-        ports:
-        - containerPort: 18081
-        command: [ "/bin/sh", "-c", "ls /etc/config/" ]
-        volumeMounts:
-        - name: config-volume
-        mountPath: /etc/config
+        - name: wsrestlogin
+          image: sophosstore/wsrestlogin:beta
+          ports:
+          - containerPort: 18081
+          command: [ "/bin/sh", "-c", "ls /etc/config/" ]
+          volumeMounts:
+          - name: config-volume
+            mountPath: /etc/config
       volumes:
         - name: config-volume
           configMap:
