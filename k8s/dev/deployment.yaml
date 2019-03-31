@@ -1,19 +1,31 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: wsrestpedido-deployment
+  name: wsrestlogin-deployment
   namespace: dev
   labels:
-    app: wsrestpedido
+    app: wsrestlogin
 spec:
-  replicas: 4
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wsrestlogin
   template:
     metadata:
       labels:
-        apps: wsrestpedido
+        app: wsrestlogin
     spec:
       containers:
-      - name: wsrestpedido
-        image: sophosstore/wsrestpedido:beta
-        ports:
-        - containerPort: 8081
+        - name: wsrestlogin
+          image: 887482798966.dkr.ecr.us-east-2.amazonaws.com/sophosstore/wsrestlogin:beta
+          resources:
+            limits:
+              memory: "500Mi"
+              cpu: "200m"
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 18081
+          command: [ "/bin/sh", "-c", "env" ]
+          envFrom:
+          - configMapRef:
+              name: wsrestlogin-configmap
