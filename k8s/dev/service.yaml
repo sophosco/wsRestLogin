@@ -9,4 +9,4 @@ spec:
       port: 18081
   type: LoadBalancer    
   selector:
-    apps: wsrestlogin
+    app: wsrestlogin

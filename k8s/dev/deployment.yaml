@@ -7,10 +7,13 @@ metadata:
     app: wsrestlogin
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: wsrestlogin
   template:
     metadata:
       labels:
-        apps: wsrestlogin
+        app: wsrestlogin
     spec:
       containers:
         - name: wsrestlogin
