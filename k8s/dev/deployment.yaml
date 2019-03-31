@@ -1,19 +1,27 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: wsrestpedido-deployment
+  name: wsrestlogin-deployment
   namespace: dev
   labels:
-    app: wsrestpedido
+    app: wsrestlogin
 spec:
-  replicas: 4
+  replicas: 1
   template:
     metadata:
       labels:
-        apps: wsrestpedido
+        apps: wsrestlogin
     spec:
       containers:
-      - name: wsrestpedido
-        image: sophosstore/wsrestpedido:beta
+      - name: wsrestlogin
+        image: sophosstore/wsrestlogin:beta
         ports:
-        - containerPort: 8081
+        - containerPort: 18081
+        command: [ "/bin/sh", "-c", "ls /etc/config/" ]
+        volumeMounts:
+        - name: config-volume
+        mountPath: /etc/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: wsrestlogin-configmap

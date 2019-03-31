@@ -1,19 +1,19 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: wsrestpedido-deployment
+  name: wsrestlogin-deployment
   namespace: stg
   labels:
-    app: wsrestpedido
+    app: wsrestlogin
 spec:
-  replicas: 4
+  replicas: 1
   template:
     metadata:
       labels:
-        apps: wsrestpedido
+        apps: wsrestlogin
     spec:
       containers:
-      - name: wsrestpedido
-        image: sophosstore/wsrestpedido:beta
+      - name: wsrestlogin
+        image: sophosstore/wsrestlogin:rc
         ports:
-        - containerPort: 8081
+        - containerPort: 18081

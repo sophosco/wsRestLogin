@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: wsrestpedido
+  name: wsrestlogin
   namespace: dev
 spec:
   ports:
     - name: http
-      port: 8081
+      port: 18081
   type: LoadBalancer    
   selector:
-    apps: wsrestpedido
+    apps: wsrestlogin
