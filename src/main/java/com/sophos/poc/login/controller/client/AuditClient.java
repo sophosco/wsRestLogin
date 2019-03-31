@@ -33,6 +33,7 @@ public class AuditClient {
 				String ModuloAplicacion,
 				String IdProducto,
 				String IdCategoria,
+				boolean XHaveToken,
 				Users users
 			) throws JsonProcessingException{
 		
@@ -46,7 +47,7 @@ public class AuditClient {
 			 headers.set("X-Channel", "wsRestLogin");
 			 headers.set("X-IPAddr", "192.169.1.1");
 			 headers.set("X-Sesion", IdSesion);
-			 headers.set("X-haveToken", "true");
+			 headers.set("X-haveToken", XHaveToken+"");
 			 headers.set("Content-Type", "application/json");
 			 HttpEntity<Audit> entity = new HttpEntity<Audit>(audit, headers);
 			
