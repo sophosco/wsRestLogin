@@ -13,6 +13,12 @@ podTemplate(label: 'slave',
             image: 'maven:alpine',
             ttyEnabled: true,
             command: 'cat'
+        ),
+        containerTemplate(
+            name: 'kubectl', 
+            image: 'lachlanevenson/k8s-kubectl:v1.8.8', 
+            command: 'cat', 
+            ttyEnabled: true
         )
     ],
    volumes: [
@@ -61,12 +67,15 @@ podTemplate(label: 'slave',
             }
         }//docker
 
-        stage('Deploy image') {
-            sh "kubectl get ns ${NAMESPACE} || kubectl create ns ${NAMESPACE}"
-            sh "sed -i.bak 's#${PROJECT}/${SERVICENAME}:${IMAGEVERSION}#${IMAGETAG}#' ./k8s/dev/*.yaml"
-            sh "kubectl --namespace=${NAMESPACE} apply -f k8s/dev/deployment.yaml"
-            sh "kubectl --namespace=${NAMESPACE} apply -f k8s/dev/service.yaml"
-            sh "echo http://`kubectl --namespace=${NAMESPACE} get service/${SERVICENAME} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${SERVICENAME}"
+        container('kubectl') {
+            stage('Deploy image') {
+                sh "kubectl get ns $NAMESPACE || kubectl create ns $NAMESPACE"
+                sh "kubectl get pods --namespace $NAMESPACE"
+                sh "sed -i.bak 's#$PROJECT/$SERVICENAME:$IMAGEVERSION#$IMAGETAG#' ./k8s/dev/*.yaml"
+                sh "kubectl --namespace=$NAMESPACE apply -f k8s/dev/deployment.yaml"
+                sh "kubectl --namespace=$NAMESPACE apply -f k8s/dev/service.yaml"
+                sh "echo http://`kubectl --namespace=$NAMESPACE get service/$SERVICENAME --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > $SERVICENAME"
+            }
         }
 
     }//node
