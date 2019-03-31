@@ -79,6 +79,7 @@ podTemplate(
                 sh "kubectl get ns $NAMESPACE || kubectl create ns $NAMESPACE"
                 sh "kubectl get pods --namespace $NAMESPACE"
                 sh "sed -i.bak 's#$PROJECT/$SERVICENAME:$IMAGEVERSION#$IMAGETAG#' ./k8s/dev/*.yaml"
+                sh "kubectl --namespace=$NAMESPACE delete configmap $SERVICENAME-configmap"
                 sh "kubectl --namespace=$NAMESPACE apply -f k8s/dev/configmap.yaml"
                 sh "kubectl --namespace=$NAMESPACE apply -f k8s/dev/deployment.yaml"
                 sh "kubectl --namespace=$NAMESPACE apply -f k8s/dev/service.yaml"
