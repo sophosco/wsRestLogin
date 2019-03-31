@@ -25,11 +25,8 @@ spec:
           imagePullPolicy: Always
           ports:
           - containerPort: 18081
-          command: [ "/bin/sh", "-c", "ls /etc/config/" ]
+          command: [ "/bin/sh", "-c", "env" ]
           volumeMounts:
-          - name: config-volume
-            mountPath: /etc/config
-      volumes:
-        - name: config-volume
-          configMap:
+          envFrom:
+          - configMapRef:
             name: wsrestlogin-configmap
