@@ -11,4 +11,7 @@ data:
   POC_CASSANDRA_PORT: '9042'
   POC_ACTIVE_USR: 'admin'
   POC_ACTIVE_QUEUE: 'poc.audit.queue'
-  POC_ACTIVE_PSS: 'admin'
+  POC_ACTIVE_PSS: 'adminsophos.2019'
+  POC_ACTIVE_ENDPOINT: 'tcp://PENDIENTEDESPLIEGUEACTIVEMQ:6616'
+  POC_SERVICE_AUDIT_VALIDATE: 'http://wsrestauditoriaapi:18082/api/actividad/add'
+  POC_SERVICE_SECURITY_VALIDATE: 'http://wsrestsecurity:8080/services/security/verifyJwtToken/'
