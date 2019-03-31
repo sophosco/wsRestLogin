@@ -18,7 +18,7 @@ import org.springframework.data.cassandra.repository.config.EnableCassandraRepos
 public class CassandraConfig extends AbstractCassandraConfiguration {
 
 	private static final String USERNAME = System.getenv("POC_CASSANDRA_USERNAME");
-	private static final String PASSWORD = System.getenv("CASSANDRA_PASSWORD");
+	private static final String PASSWORD = System.getenv("POC_CASSANDRA_PASSWORD");
 	private static final String KEYSPACE_NAME = System.getenv("POC_CASSANDRA_KEYSPACE");
 	private static final String CONTACT_POINTS = System.getenv("POC_CASSANDRA_HOST");
 	private static final int PORT = Integer.parseInt(System.getenv("POC_CASSANDRA_PORT"));

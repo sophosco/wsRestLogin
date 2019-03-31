@@ -16,3 +16,4 @@ data:
   POC_SERVICE_AUDIT_VALIDATE: 'http://wsrestauditoriaapi:18082/api/actividad/add'
   POC_SERVICE_SECURITY_VALIDATE: 'http://wsrestsecurity:8080/services/security/verifyJwtToken/'
   POC_CASSANDRA_USERNAME: 'cassandra'
+  POC_CASSANDRA_PASSWORD: 'I4EKoYymWV'
