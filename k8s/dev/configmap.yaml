@@ -7,7 +7,7 @@ data:
   POC_REDIS_HOST: 'http://redis-master'
   POC_REDIS_PORT: '6379'
   POC_CASSANDRA_KEYSPACE: 'sophospoc'
-  POC_CASSANDRA_HOST: 'http://cassandra'
+  POC_CASSANDRA_HOST: 'cassandra'
   POC_CASSANDRA_PORT: '9042'
   POC_ACTIVE_USR: 'admin'
   POC_ACTIVE_QUEUE: 'poc.audit.queue'
@@ -15,3 +15,4 @@ data:
   POC_ACTIVE_ENDPOINT: 'tcp://PENDIENTEDESPLIEGUEACTIVEMQ:6616'
   POC_SERVICE_AUDIT_VALIDATE: 'http://wsrestauditoriaapi:18082/api/actividad/add'
   POC_SERVICE_SECURITY_VALIDATE: 'http://wsrestsecurity:8080/services/security/verifyJwtToken/'
+  POC_CASSANDRA_USERNAME: 'cassandra'
