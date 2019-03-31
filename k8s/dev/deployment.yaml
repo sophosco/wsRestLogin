@@ -25,7 +25,6 @@ spec:
           imagePullPolicy: Always
           ports:
           - containerPort: 18081
-          command: [ "/bin/sh", "-c", "env" ]
           envFrom:
           - configMapRef:
               name: wsrestlogin-configmap
