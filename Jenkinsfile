@@ -53,12 +53,7 @@ podTemplate(
                     sh 'mvn test'
                 } 
                 finally {
-                    //junit '**/target/*-reports/TEST-*.xml'
-                    step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
-                    if (currentBuild.result == "UNSTABLE") {
-                        // input "Unit tests are failing, proceed?"
-                        sh "exit 1"
-                    }
+                    junit '**/target/surefire-reports/TEST-*.xml'
                 }
             }
             stage('Scann Code') {
@@ -84,8 +79,7 @@ podTemplate(
                 sh "kubectl get ns $NAMESPACE || kubectl create ns $NAMESPACE"
                 sh "kubectl get pods --namespace $NAMESPACE"
                 sh "sed -i.bak 's#$PROJECT/$SERVICENAME:$IMAGEVERSION#$IMAGETAG#' ./k8s/dev/*.yaml"
-                sh "kubectl --namespace=$NAMESPACE delete configmap $SERVICENAME-configmap"
-                sh "kubectl --namespace=$NAMESPACE create -f k8s/dev/configmap.yaml"
+                sh "kubectl --namespace=$NAMESPACE create configmap $SERVICENAME-configmap -f k8s/dev/configmap.yaml --dry-run - yaml | kubectl apply -f -"
                 sh "kubectl --namespace=$NAMESPACE apply -f k8s/dev/deployment.yaml"
                 sh "kubectl --namespace=$NAMESPACE apply -f k8s/dev/service.yaml"
                 sh "echo http://`kubectl --namespace=$NAMESPACE get service/$SERVICENAME --output=json jsonpath='{.status.loadBalancer.ingress[0].ip}'` > $SERVICENAME"
