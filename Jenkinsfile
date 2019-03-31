@@ -1,5 +1,6 @@
 podTemplate(
     label: 'slave', 
+    cloud: 'kubernetes',
     serviceAccount: 'jenkins',
     containers: [
         containerTemplate(
@@ -76,7 +77,10 @@ podTemplate(
                 sh "sed -i.bak 's#$PROJECT/$SERVICENAME:$IMAGEVERSION#$IMAGETAG#' ./k8s/dev/*.yaml"
                 sh "kubectl --namespace=$NAMESPACE apply -f k8s/dev/deployment.yaml"
                 sh "kubectl --namespace=$NAMESPACE apply -f k8s/dev/service.yaml"
-                sh "echo http://`kubectl --namespace=$NAMESPACE get service/$SERVICENAME --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > $SERVICENAME"
+                sh """
+                    SERVICE_IP=$(kubectl --namespace=$NAMESPACE get service/$SERVICENAME  --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")
+                    echo http://$SERVICE_IP:18080/
+                """
             }
         }
 
