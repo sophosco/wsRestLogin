@@ -17,7 +17,12 @@ spec:
     spec:
       containers:
         - name: wsrestlogin
-          image: sophosstore/wsrestlogin:beta
+          image: 887482798966.dkr.ecr.us-east-2.amazonaws.com/sophosstore/wsrestlogin:beta
+          resources:
+            limits:
+              memory: "500Mi"
+              cpu: "200m"
+          imagePullPolicy: Always
           ports:
           - containerPort: 18081
           command: [ "/bin/sh", "-c", "ls /etc/config/" ]
