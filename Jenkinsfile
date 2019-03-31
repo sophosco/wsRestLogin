@@ -1,4 +1,6 @@
-podTemplate(label: 'slave', 
+podTemplate(
+    label: 'slave', 
+    serviceAccount: 'jenkins',
     containers: [
         containerTemplate(
             name: 'docker', 
@@ -16,7 +18,7 @@ podTemplate(label: 'slave',
         ),
         containerTemplate(
             name: 'kubectl', 
-            image: 'lachlanevenson/k8s-kubectl:v1.8.8', 
+            image: 'lachlanevenson/k8s-kubectl:latest', 
             command: 'cat', 
             ttyEnabled: true
         )
