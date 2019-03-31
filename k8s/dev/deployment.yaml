@@ -24,7 +24,7 @@ spec:
               cpu: "200m"
           imagePullPolicy: Always
           ports:
-          - containerPort: 18081
+          - containerPort: 18080
           envFrom:
           - configMapRef:
               name: wsrestlogin-configmap
