@@ -27,19 +27,19 @@ podTemplate(label: 'slave',
         def SERVICENAME  = 'wsrestlogin'
         def AWS_REGION   = 'us-east-2'
         def REGISTRY_URL = "https://887482798966.dkr.ecr.us-east-2.amazonaws.com"
-        def IMAGEVERSION = 'alpha'
+        def IMAGEVERSION = "a${env.BUILD_NUMBER}"
         def NAMESPACE    = 'dev'
-        def IMAGETAG     = "$PROJECT/$SERVICENAME:$IMAGEVERSION${env.BUILD_NUMBER}"
+        def IMAGETAG     = "$PROJECT/$SERVICENAME:$IMAGEVERSION"
 
-        stage('Checkout') {
+        stage('Checkout code') {
             checkout scm
         }
         
         container('maven') {
-            stage('Build') {
+            stage('Build app') {
                 sh 'mvn package'
             }
-            stage('Test') {
+            stage('Test app') {
                 try {
                     sh 'mvn test'
                 } 
@@ -60,6 +60,14 @@ podTemplate(label: 'slave',
                 }
             }
         }//docker
+
+        stage('Deploy image') {
+            sh "kubectl get ns ${NAMESPACE} || kubectl create ns ${NAMESPACE}"
+            sh "sed -i.bak 's#${PROJECT}/${SERVICENAME}:${IMAGEVERSION}#${IMAGETAG}#' ./k8s/dev/*.yaml"
+            sh "kubectl --namespace=${NAMESPACE} apply -f k8s/dev/deployment.yaml"
+            sh "kubectl --namespace=${NAMESPACE} apply -f k8s/dev/service.yaml"
+            sh "echo http://`kubectl --namespace=${NAMESPACE} get service/${SERVICENAME} --output=json | jq -r '.status.loadBalancer.ingress[0].ip'` > ${SERVICENAME}"
+        }
 
     }//node
 }//podTemplate
