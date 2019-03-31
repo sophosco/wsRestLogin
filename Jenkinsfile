@@ -53,9 +53,18 @@ podTemplate(
                     sh 'mvn test'
                 } 
                 finally {
-                    junit '**/target/*-reports/TEST-*.xml'
+                    //junit '**/target/*-reports/TEST-*.xml'
+                    step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
+                    if (currentBuild.result == "UNSTABLE") {
+                        // input "Unit tests are failing, proceed?"
+                        sh "exit 1"
+                    }
                 }
             }
+            stage('Scann Code') {
+                sh "mvn sonar:sonar -Dsonar.host.url=http://sonarqube-sonarqube:9000 -DskipTests=true -Dsonar.projectKey=$SERVICENAME -Dsonar.projectName=$SERVICENAME"
+            }
+
         }//maven
 
         container('docker') {
