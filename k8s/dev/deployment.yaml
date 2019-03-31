@@ -26,7 +26,6 @@ spec:
           ports:
           - containerPort: 18081
           command: [ "/bin/sh", "-c", "env" ]
-          volumeMounts:
           envFrom:
           - configMapRef:
-            name: wsrestlogin-configmap
+              name: wsrestlogin-configmap
