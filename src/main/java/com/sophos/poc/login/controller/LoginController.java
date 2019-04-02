@@ -1,6 +1,7 @@
 package com.sophos.poc.login.controller;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sophos.poc.login.controller.client.AuditClient;
 import com.sophos.poc.login.controller.client.SecurityClient;
 import com.sophos.poc.login.model.LoginResponse;
@@ -40,6 +41,8 @@ public class LoginController {
 	
 	private static final Logger logger = LogManager.getLogger(LoginController.class);
 
+	private static ObjectMapper mapper = new ObjectMapper();
+
 	
 	public LoginController(UserRepository userRepository, AuditClient auditClient, SecurityClient securityClient) {
 		this.userRepository = userRepository;
@@ -55,27 +58,35 @@ public class LoginController {
 			@RequestHeader(value = "X-IPAddr", required = true) String xIPAddr,
 			@RequestHeader(value = "X-Sesion", required = true) String xSesion, 
 			@RequestHeader(value = "X-HaveToken", required = false, defaultValue = "true" ) boolean xHaveToken, 
-			@RequestBody Users users) 
+			@RequestBody Users users) throws JsonProcessingException 
 	{
 		try {
-			
-			ObjectMapper jacksonMapper = new ObjectMapper();
-			jacksonMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-			logger.debug(xRqUID +" - Request - "+jacksonMapper.writeValueAsString(users));
+			logger.info("Headers: xSesion["+ xSesion +"] ");
+			logger.info("Request: "+mapper.writeValueAsString(users));
+			String defaultError ="ERROR Ocurrio una exception inesperada";
 
 			if((xSesion == null || xSesion.isEmpty()) || (xHaveToken && HttpStatus.UNAUTHORIZED.equals(securityClient.verifyJwtToken(xSesion).getStatusCode()))) {
-				Status status = new Status("500","El token no es valido o ya expiro. Intente mas tarde", "ERROR Ocurrio una exception inesperada", null);
-				return new ResponseEntity<>(status, HttpStatus.UNAUTHORIZED);
+				Status status = new Status("500","El token no es valido o ya expiro. Intente mas tarde", defaultError, null);
+				ResponseEntity<Status> res = new ResponseEntity<>(status, HttpStatus.UNAUTHORIZED);
+				logger.info("Response ["+ res.getStatusCode() +"] :"+mapper.writeValueAsString(res));
+				return res;
 			}
 			if(users == null) {
-				Status status = new Status("500", "ERROR Ocurrio una exception inesperada", "Objecto Orders es <NULL>", null);
-				return new ResponseEntity<>(status, HttpStatus.INTERNAL_SERVER_ERROR);
+				Status status = new Status("500", defaultError, "Objecto User es <NULL>", null);
+				ResponseEntity<Status> res = new ResponseEntity<>(status, HttpStatus.INTERNAL_SERVER_ERROR);
+				logger.info("Response ["+ res.getStatusCode() +"] :"+mapper.writeValueAsString(res));
+				return res;
 			}
 			
 			if(xRqUID == null || xChannel == null || xIPAddr == null ) {
-				Status status = new Status("500", "ERROR Ocurrio una exception inesperada", "Valor <NULL> en alguna cabecera obligatorio (X-RqUID X-Channel X-IPAddr X-Sesion)", null);
-				return new ResponseEntity<>(status, HttpStatus.INTERNAL_SERVER_ERROR);
+				Status status = new Status("500", defaultError, "Valor <NULL> en alguna cabecera obligatorio (X-RqUID X-Channel X-IPAddr X-Sesion)", null);
+				ResponseEntity<Status> res = new ResponseEntity<>(status, HttpStatus.INTERNAL_SERVER_ERROR);
+				logger.info("Response ["+ res.getStatusCode() +"] :"+mapper.writeValueAsString(res));
+				return res;
 			}
+			
+			if(users.getIdSesion() == null || users.getIdSesion().isEmpty())
+				users.setIdSesion(UUID.randomUUID().toString());
 			
 			auditClient.saveAudit(
 					xSesion,
@@ -95,14 +106,14 @@ public class LoginController {
 				LoginResponse response = new LoginResponse(System.currentTimeMillis()+"".lastIndexOf(4)+"");
 				Status status = new Status("0", "Operacion Exitosa", "", response);
 				ResponseEntity<Status> res = new ResponseEntity<>(status, HttpStatus.OK);
-				logger.debug(xRqUID +" - Response - "+jacksonMapper.writeValueAsString(res));
+				logger.info("Response ["+ res.getStatusCode() +"] :"+mapper.writeValueAsString(res));
 				return res;
 
 			}else {
 				LoginResponse response = new LoginResponse(System.currentTimeMillis()+"".lastIndexOf(4)+"");
 				Status status = new Status("101", "ERROR en autenticacion de usuario. Usuario o Password Incorrecto.", "", response);
 				ResponseEntity<Status> res = new ResponseEntity<>(status, HttpStatus.UNAUTHORIZED);
-				logger.debug(xRqUID +" - Response - "+jacksonMapper.writeValueAsString(res));
+				logger.info("Response ["+ res.getStatusCode() +"] :"+mapper.writeValueAsString(res));
 				return res;
 			}
 
@@ -110,7 +121,9 @@ public class LoginController {
 			logger.error("Ocurrio un excepcion inesperada",e);
 			e.printStackTrace();
 			Status status = new Status("500", "ERROR Ocurrio una exception inesperada", e.getMessage(), null);
-			return new ResponseEntity<>(status, HttpStatus.INTERNAL_SERVER_ERROR);
+			ResponseEntity<Status> res = new ResponseEntity<>(status, HttpStatus.INTERNAL_SERVER_ERROR);
+			logger.info("Response ["+ res.getStatusCode() +"] :"+mapper.writeValueAsString(status));
+			return res;
 		}
 	}
 	
