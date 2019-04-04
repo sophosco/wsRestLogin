@@ -38,7 +38,7 @@ podTemplate(
         def REGISTRY_URL = "https://887482798966.dkr.ecr.us-east-2.amazonaws.com"
         def IMAGEVERSION = "beta"
         def NAMESPACE    = 'dev'
-        def IMAGETAG     = "$PROJECT/$SERVICENAME:$IMAGEVERSION"
+        def IMAGETAG     = "$PROJECT/$SERVICENAME:$IMAGEVERSION${env.BUILD_NUMBER}"
 
         stage('Checkout code') {
             checkout scm
