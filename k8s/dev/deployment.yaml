@@ -1,15 +1,12 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: wsrestlogin-deployment
+  name: wsrestlogin
   namespace: dev
   labels:
     app: wsrestlogin
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      app: wsrestlogin
   template:
     metadata:
       labels:
@@ -24,7 +21,8 @@ spec:
               cpu: "200m"
           imagePullPolicy: Always
           ports:
-          - containerPort: 443
+          - containerPort: 8080
+            name: wsrestlogin-http
           envFrom:
           - configMapRef:
               name: wsrestlogin-configmap

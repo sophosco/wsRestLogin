@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: wsrestlogin-configmap
+  name: wsrestlogin
   namespace: dev
 data:
   POC_CASSANDRA_KEYSPACE: 'sophospoc'
   POC_CASSANDRA_HOST: 'cassandra'
   POC_CASSANDRA_PORT: '9042'
   POC_SERVICE_AUDIT_VALIDATE: 'http://wsrestauditoriaapi:18082/api/actividad/add'
-  POC_SERVICE_SECURITY_VALIDATE: 'http://wsrestsecurity:3000/services/security/verifyJwtToken/'
+  POC_SERVICE_SECURITY_VALIDATE: 'http://wsrestsecurity:3010/services/security/verifyJwtToken/'
   POC_CASSANDRA_USERNAME: 'cassandra'
   POC_CASSANDRA_PASSWORD: 'pQbgyyDIFq'
   

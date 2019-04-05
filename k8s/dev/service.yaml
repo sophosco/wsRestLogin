@@ -4,8 +4,8 @@ metadata:
   name: wsrestlogin
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-2:887482798966:certificate/541a4741-02a6-450b-8514-a6fd11bff86b
-    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-2:887482798966:certificate/e1d649ba-6e3a-496d-a3d4-f38a0672f75c
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
     service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
   namespace: dev
 spec:
@@ -13,9 +13,11 @@ spec:
     - port: 18080
       name: http
       protocol: TCP
+      targetPort: wsrestlogin-http
     - port: 443
       name: https
       protocol: TCP
+      targetPort: wsrestlogin-http
   type: LoadBalancer    
   selector:
     app: wsrestlogin
