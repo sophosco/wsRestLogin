@@ -1,10 +1,7 @@
 package com.sophos.poc.login.model;
 
-import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-
 public class Users {
 	
-	@PrimaryKey
 	private String email;
 	private String idSesion;
 	private String password;
