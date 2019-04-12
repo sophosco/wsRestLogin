@@ -56,6 +56,9 @@ podTemplate(
                     junit '**/target/surefire-reports/TEST-*.xml'
                 }
             }
+            stage('Scann Code') {
+                sh "mvn sonar:sonar -Dsonar.host.url=http://sonarqube-sonarqube:9000 -DskipTests=true -Dsonar.projectKey=$SERVICENAME -Dsonar.projectName=$SERVICENAME"
+            }
 
         }//maven
 
@@ -86,4 +89,3 @@ podTemplate(
 
     }//node
 }//podTemplate
-// Prueba compilación
